@@ -1,0 +1,149 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="CentreModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'C:\USERS\MINHMEO\UNIWORK\DISTRIBUTED COMPUTING\COMP3008_ASSIGNMENT2\CENTRE BOOKING\DATABASEWEBAPI\APP_DATA\CENTRE.MDF.dbo.BookedSession' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="BookedSession">
+          <Key>
+            <PropertyRef Name="Id" />
+            <PropertyRef Name="EndDate" />
+            <PropertyRef Name="ClientName" />
+            <PropertyRef Name="CentreId" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="EndDate" Type="datetime" Nullable="false" />
+          <Property Name="ClientName" Type="nchar" MaxLength="20" Nullable="false" />
+          <Property Name="CentreId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Centre">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="name" Type="nchar" MaxLength="20" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_BookedSession_ToTable">
+          <End Role="Centre" Type="Self.Centre" Multiplicity="1" />
+          <End Role="BookedSession" Type="Self.BookedSession" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Centre">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="BookedSession">
+              <PropertyRef Name="CentreId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="CentreModelStoreContainer">
+          <EntitySet Name="Centre" EntityType="Self.Centre" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="BookedSession" EntityType="Self.BookedSession" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [BookedSession].[Id] AS [Id], 
+    [BookedSession].[EndDate] AS [EndDate], 
+    [BookedSession].[ClientName] AS [ClientName], 
+    [BookedSession].[CentreId] AS [CentreId]
+    FROM [dbo].[BookedSession] AS [BookedSession]</DefiningQuery>
+          </EntitySet>
+          <AssociationSet Name="FK_BookedSession_ToTable" Association="Self.FK_BookedSession_ToTable">
+            <End Role="Centre" EntitySet="Centre" />
+            <End Role="BookedSession" EntitySet="BookedSession" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="CentreModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Centre">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="name" Type="String" MaxLength="20" FixedLength="true" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="BookedSessions" Relationship="Self.FK_BookedSession_ToTable" FromRole="Centre" ToRole="BookedSession" />
+        </EntityType>
+        <EntityType Name="BookedSession">
+          <Key>
+            <PropertyRef Name="Id" />
+            <PropertyRef Name="EndDate" />
+            <PropertyRef Name="ClientName" />
+            <PropertyRef Name="CentreId" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="EndDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="ClientName" Type="String" MaxLength="20" FixedLength="true" Unicode="true" Nullable="false" />
+          <Property Name="CentreId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Centre" Relationship="Self.FK_BookedSession_ToTable" FromRole="BookedSession" ToRole="Centre" />
+        </EntityType>
+        <Association Name="FK_BookedSession_ToTable">
+          <End Role="Centre" Type="Self.Centre" Multiplicity="1" />
+          <End Role="BookedSession" Type="Self.BookedSession" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Centre">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="BookedSession">
+              <PropertyRef Name="CentreId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="CentreEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Centres" EntityType="Self.Centre" />
+          <EntitySet Name="BookedSessions" EntityType="Self.BookedSession" />
+          <AssociationSet Name="FK_BookedSession_ToTable" Association="Self.FK_BookedSession_ToTable">
+            <End Role="Centre" EntitySet="Centres" />
+            <End Role="BookedSession" EntitySet="BookedSessions" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="CentreModelStoreContainer" CdmEntityContainer="CentreEntities">
+          <EntitySetMapping Name="Centres">
+            <EntityTypeMapping TypeName="CentreModel.Centre">
+              <MappingFragment StoreEntitySet="Centre">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="name" ColumnName="name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="BookedSessions">
+            <EntityTypeMapping TypeName="CentreModel.BookedSession">
+              <MappingFragment StoreEntitySet="BookedSession">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="EndDate" ColumnName="EndDate" />
+                <ScalarProperty Name="ClientName" ColumnName="ClientName" />
+                <ScalarProperty Name="CentreId" ColumnName="CentreId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

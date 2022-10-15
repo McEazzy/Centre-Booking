@@ -1,0 +1,28 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    <link rel="stylesheet" href="~/css/site.css">
+</head>
+<body>
+    <div id="header">
+       
+    </div>
+    <div id="navigation">
+        <ul>
+            <li> <a href="/Home">Home</a></></li>
+            <li> <a href="/Admin">Admin</a></></li>
+        </ul>
+    </div>
+    <div id ="main">
+        @RenderBody()
+    </div>
+    <div id="footer">
+        <p> Developed by Minh Vu for assignment 2</p>
+    </div>
+    <script src="~/js/site.js"></script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+</body>
+</html>

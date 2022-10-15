@@ -1,0 +1,38 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<div id="adminForm">
+    <form>
+        <input type="text" id="AUser" name="AUser" placeholder="Admin User" />
+        <input type="text" id="APass" name="APass" placeholder="Admin Password" />
+    </form>
+    <button id="login" onClick="login()">Log In</button>
+</div>
+<script>
+    function login()
+    {
+        $.ajax(
+        {
+            url: '/admin/login/',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(
+            {
+                "Username": $("#AUser").val(),
+                "Password": $("#APass").val()
+            }),
+            success: function (data, textStatus, jQxhr) {
+                alert("Admin Login Succesfully!");
+                @*once logged in, redirect to another razor page in admin view*@
+                window.location.href = '@Url.Action("Index","Admin")'; 
+            },
+            error: function (jqXhr, textStatus, error) {
+                alert(jqXhr.responseText);
+                console.log(textStatus);
+                console.log(error);
+            }
+        });
+    }
+</script>
