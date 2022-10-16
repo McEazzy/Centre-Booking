@@ -6,6 +6,5 @@
         public DateTime EndDate;
         public string? ClientName;
         public int CentreId;
-        public Centre? Centre;
     }
 }

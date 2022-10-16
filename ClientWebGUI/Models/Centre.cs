@@ -4,6 +4,6 @@
     {
         public int Id;
         public string? Name;
-        public List<BookedSession>? Sessions;
+        public List<BookedSession>? BookedSessions;
     }
 }

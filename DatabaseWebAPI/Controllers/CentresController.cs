@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -31,6 +32,9 @@ namespace DatabaseWebAPI.Controllers
             {
                 return NotFound();
             }
+
+            Debug.WriteLine("Check this for me: " + centre.BookedSessions.ToList().Count);
+
 
             return Ok(centre);
         }

@@ -10,28 +10,77 @@
     @if(ViewBag.ServerError == null)
     {
         <table>
-        @foreach (var centre in Model)
-        {
-            <tr>
-                <td>@centre.Id</td>
-                <td>@centre.Name</td>
-                <td>
-                    <button id="selectcentre" onClick="select()">Select</button>
-                </td>
-            </tr>
-        }
+            @foreach (var centre in Model)
+            {
+                <tr>
+                    <td>@centre.Id</td>
+                    <td id="CName_@centre.Id">@centre.Name</td>
+                    <td>
+                        <button onclick="select(@centre.Id, '@centre.Name')">select</button>
+                    </td>
+                </tr>
+            }
         </table>
     }
     else
     {
-        <p>ViewBag.ServerError</p>
+        <p>ViewBag.ServerError</p>  
     }
 </div>
+<div id= "date">
+    <p>Selected centre: [ID -<input style="display:inline-block; width:40px" readonly type="number" id="SId"/>]</p>
+    <input type="text" id="SCentre" readonly placeholder="Non-selected"/>
+    <p>Available date to book: </p>
+    <input type="text" id="ADate" readonly placeholder="Select a centre to see its date"/>
+    <p>Booking till the end date:</p>
+    <input type="date" id="EDate" />
+    <p>Enter your name to book the venue:</p>
+    <input type="text" id="UName" placeholder="e.g: Naruto Uzumaki,..."/>
+    <button onClick="book()">Set Date</button>
+</div>
+
 <script>
-    function select()
+    function select(id, name)
+    {
+        @*Add the selected centre name and its into the watched boxes*@
+        $("#SCentre").val(name);
+        $("#SId").val(id);
+
+        $.ajax({
+            url: '/home/select/' + id,
+            type: 'get',
+            contentType: 'application/json',
+            processData: false,
+            success: function (data, textStatus, jQxhr) {
+                var obj = JSON.parse(data);
+                @*set the date in the available date booking text box*@
+                $("#ADate").val(obj);
+            },
+            error: function (jqXhr, textStatus, errorThrown) {
+                console.log(errorThrown);
+            }
+        });
+    }
+
+    function book()
     {
         $.ajax({
-
-        })
+            url: '/home/book/',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(
+            {
+                "EndDate": $("#EDate").val(),
+                "ClientName": $("#UName").val(),
+                "CentreId": $("#SId"),val()
+            }),
+            success: function (data, textStatus, jQxhr) {
+                alert("Sucessfully book-in a rental period for a centre's venue!");
+            },
+            error: function (jqXhr, textStatus, errorThrown) {
+                alert(jqXhr.responseText);
+                console.log(errorThrown);
+            }
+        });
     }
 </script>

@@ -2,6 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using RestSharp;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Net;
 
 namespace ClientWebGUI.Controllers
 {
@@ -35,10 +38,70 @@ namespace ClientWebGUI.Controllers
             }
         }
 
-        @Student
-        public IActionResult SelectCenre()
+        [HttpGet]
+        public IActionResult Select(int id)
         {
+            try 
+            {
+                RestClient restClient = new RestClient("http://localhost:50697/");
+                RestRequest restRequest = new RestRequest($"api/centres/{id}", Method.Get);
+                RestResponse restResponse = restClient.Execute(restRequest);
 
+                if (restResponse.IsSuccessStatusCode)
+                {
+                    Debug.WriteLine(restResponse.Content);
+                    Centre cen = JsonConvert.DeserializeObject<Centre>(restResponse.Content);
+                    DateTime endDate = cen.BookedSessions.Last().EndDate;
+
+                    //if the last end date from all booking sessions occured before, set available date to today
+                    string availDate;
+                    if(endDate < DateTime.Today)
+                    {
+                        availDate = DateTime.Today.ToShortDateString();
+                    }
+                    //increment available date to the next day of the last booking's end date
+                    else
+                    {
+                        availDate = endDate.AddDays(1).ToShortDateString();
+                    }
+                    return Ok(JsonConvert.SerializeObject(availDate));
+                }
+                else
+                {
+                    return StatusCode((int)restResponse.StatusCode, restResponse.Content);
+                }
+            }
+            catch (HttpRequestException e)
+            {
+                return StatusCode((int)HttpStatusCode.ServiceUnavailable, "Can't establish a connection to backend server. Error source: " + e.Message);
+            }
+        }
+
+        [HttpPost]
+        public IActionResult Book([FromBody] BookedSession session) {
+            Debug.WriteLine("Session ID is " + session);
+
+            try
+            {
+                RestClient restClient = new RestClient("http://localhost:50697/");
+                RestRequest restRequest = new RestRequest($"api/centres", Method.Post);
+                restRequest.AddJsonBody(JsonConvert.SerializeObject(session));
+                RestResponse restResponse = restClient.Execute(restRequest);
+
+                if (restResponse.IsSuccessStatusCode)
+                {
+                    Debug.WriteLine(restResponse.Content);
+                    return Ok();
+                }
+                else
+                {
+                    return StatusCode((int)restResponse.StatusCode, restResponse.Content);
+                }
+            }
+            catch (HttpRequestException e)
+            {
+                return StatusCode((int)HttpStatusCode.ServiceUnavailable, "Can't establish a connection to backend server. Error source: " + e.Message);
+            }
         }
     }
 }

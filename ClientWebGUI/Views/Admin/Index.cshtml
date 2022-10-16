@@ -23,7 +23,8 @@
                 "Username": $("#AUser").val(),
                 "Password": $("#APass").val()
             }),
-            success: function (data, textStatus, jQxhr) {
+            success: function (data, textStatus, jQxhr) 
+            {
                 alert("Admin Login Succesfully!");
                 @*once logged in, redirect to another razor page in admin view*@
                 window.location.href = '@Url.Action("Index","Admin")'; 
