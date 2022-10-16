@@ -12,4 +12,8 @@
     <PackageReference Include="RestSharp" Version="108.0.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\DatabaseWebAPI\DatabaseWebAPI.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -3,13 +3,20 @@
 *@
 @{
     @using ClientWebGUI.Models;
-    @model IEnumerable<Centre>;
+    @model IEnumerable<PreCentre>;
 }
 
 <div id="tableview">
     @if(ViewBag.ServerError == null)
     {
         <table>
+            <thead>
+                <tr>
+                <th style="width:150px">ID</th>
+                <th style="width:150px">Centre</th>
+                <th></th>
+            </tr>
+            </thead>
             @foreach (var centre in Model)
             {
                 <tr>
@@ -27,15 +34,19 @@
         <p>ViewBag.ServerError</p>  
     }
 </div>
+
 <div id= "date">
     <p>Selected centre: [ID -<input style="display:inline-block; width:40px" readonly type="number" id="SId"/>]</p>
     <input type="text" id="SCentre" readonly placeholder="Non-selected"/>
-    <p>Available date to book: </p>
-    <input type="text" id="ADate" readonly placeholder="Select a centre to see its date"/>
-    <p>Booking till the end date:</p>
-    <input type="date" id="EDate" />
-    <p>Enter your name to book the venue:</p>
-    <input type="text" id="UName" placeholder="e.g: Naruto Uzumaki,..."/>
+    <p>Available date to book: 
+        <input type="date" id="ADate" style="display:inline-block; width:200px" readonly placeholder="Select a centre to see its date"/>
+    </p>    
+    <p>Booking until (the end date):
+        <input type="date" id="EDate" style="display:inline-block" />
+    </p>
+    <p>Enter your name to book the venue:
+        <input type="text" id="UName" style="display:inline-block" placeholder="e.g: Naruto Uzumaki,..."/>
+    </p>
     <button onClick="book()">Set Date</button>
 </div>
 
@@ -61,18 +72,25 @@
             }
         });
     }
-
+</script>
+<script>
     function book()
     {
+        var date = new Date($("#EndDate").val()).format('YYYY-MM-DD');
+        var day = date.getDate();
+        var month = date.getMonth();
+        var year = date.getFullYear();
+        alert(day + "/" + month + "/" + year);
         $.ajax({
             url: '/home/book/',
             type: 'POST',
             contentType: 'application/json',
             data: JSON.stringify(
             {
-                "EndDate": $("#EDate").val(),
+                "Id": 5,
+                "EndDate": $("#EndDate").val(),
                 "ClientName": $("#UName").val(),
-                "CentreId": $("#SId"),val()
+                "CentreId": $("#SId").val()
             }),
             success: function (data, textStatus, jQxhr) {
                 alert("Sucessfully book-in a rental period for a centre's venue!");

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
-namespace ClientWebGUI.Models
+﻿namespace ClientWebGUI.Models
 {
     public class Credential
     {

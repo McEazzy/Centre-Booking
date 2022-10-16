@@ -1,6 +1,7 @@
 ﻿using DatabaseWebAPI.Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Web;
 using System.Web.Http;
@@ -22,6 +23,7 @@ namespace DatabaseWebAPI.Controllers
                 return BadRequest(ModelState);
             }
 
+            Debug.WriteLine(session.CentreId);
             Centre centre = db.Centres.First(c => c.Id == session.CentreId);
             centre.BookedSessions.Add(session);
             db.SaveChanges();

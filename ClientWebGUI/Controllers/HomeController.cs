@@ -1,4 +1,5 @@
 ﻿using ClientWebGUI.Models;
+using DatabaseWebAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using RestSharp;
@@ -22,8 +23,16 @@ namespace ClientWebGUI.Controllers
 
                 if (restResponse.IsSuccessStatusCode)
                 {
-                    return View(JsonConvert.DeserializeObject<List<Centre>>(restResponse.Content));
-                    
+                    if(Access.admin)
+                    {
+                        //Home View for admin
+                        return View("IndexAdmin", JsonConvert.DeserializeObject<List<PreCentre>>(restResponse.Content));
+                    }
+                    else
+                    {
+                        //Home view for non-admin
+                        return View(JsonConvert.DeserializeObject<List<PreCentre>>(restResponse.Content));
+                    }
                 }
                 else
                 {
@@ -49,21 +58,21 @@ namespace ClientWebGUI.Controllers
 
                 if (restResponse.IsSuccessStatusCode)
                 {
-                    Debug.WriteLine(restResponse.Content);
                     Centre cen = JsonConvert.DeserializeObject<Centre>(restResponse.Content);
-                    DateTime endDate = cen.BookedSessions.Last().EndDate;
+                    DateTime endDate = Convert.ToDateTime(cen.BookedSessions.Last().EndDate);
 
                     //if the last end date from all booking sessions occured before, set available date to today
                     string availDate;
                     if(endDate < DateTime.Today)
                     {
-                        availDate = DateTime.Today.ToShortDateString();
+                        availDate = DateTime.Today.ToString("yyyy-MM-dd");
                     }
                     //increment available date to the next day of the last booking's end date
                     else
                     {
-                        availDate = endDate.AddDays(1).ToShortDateString();
+                        availDate = endDate.AddDays(1).ToString("yyyy-MM-dd");
                     }
+
                     return Ok(JsonConvert.SerializeObject(availDate));
                 }
                 else
@@ -78,19 +87,53 @@ namespace ClientWebGUI.Controllers
         }
 
         [HttpPost]
-        public IActionResult Book([FromBody] BookedSession session) {
-            Debug.WriteLine("Session ID is " + session);
-
+        public IActionResult Book([FromBody] PreBooking session) 
+        {
+            Debug.WriteLine(JsonConvert.SerializeObject(session));
             try
             {
                 RestClient restClient = new RestClient("http://localhost:50697/");
-                RestRequest restRequest = new RestRequest($"api/centres", Method.Post);
+                RestRequest restRequest = new RestRequest($"api/booking", Method.Post);
                 restRequest.AddJsonBody(JsonConvert.SerializeObject(session));
                 RestResponse restResponse = restClient.Execute(restRequest);
 
                 if (restResponse.IsSuccessStatusCode)
                 {
                     Debug.WriteLine(restResponse.Content);
+                    return Ok();
+                }
+                else
+                {
+                    return StatusCode((int)restResponse.StatusCode, restResponse.Content);
+                }
+            }
+            catch (HttpRequestException e)
+            {
+                return StatusCode((int)HttpStatusCode.ServiceUnavailable, "Can't establish a connection to backend server. Error source: " + e.Message);
+            }
+        }
+
+        [HttpPost]
+        public IActionResult Add([FromBody] PreCentre centre)
+        {
+            Debug.WriteLine("check here" + centre.Id);
+
+            Centre newCentre = new Centre()
+            {
+                Id = centre.Id,
+                name = centre.Name,
+                BookedSessions = new List<BookedSession>(),
+            };
+
+            try
+            {
+                RestClient restClient = new RestClient("http://localhost:50697/");
+                RestRequest restRequest = new RestRequest($"api/centres", Method.Post);
+                restRequest.AddJsonBody(JsonConvert.SerializeObject(newCentre));
+                RestResponse restResponse = restClient.Execute(restRequest);
+
+                if (restResponse.IsSuccessStatusCode)
+                {
                     return Ok();
                 }
                 else

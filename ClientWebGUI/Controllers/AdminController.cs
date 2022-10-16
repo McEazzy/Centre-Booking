@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using RestSharp;
+using System;
 using System.Diagnostics;
 using System.Net;
 
@@ -12,7 +13,7 @@ namespace ClientWebGUI.Controllers
         public IActionResult Index()
         {
             ViewBag.Title = "Admin";
-            if(Request.Cookies.ContainsKey("AKey"))
+            if(Access.admin)
             {
                 return View("IndexAdmin");
             }
@@ -25,6 +26,7 @@ namespace ClientWebGUI.Controllers
         [HttpPost]
         public IActionResult Login([FromBody] Credential access)
         {
+            Debug.WriteLine(access.Username);
             try
             {
                 //prepare a POST request to backend for validation of admin
@@ -37,7 +39,8 @@ namespace ClientWebGUI.Controllers
                 if (restResponse.IsSuccessStatusCode)
                 {
                     //Create a cookie to memorise admin registration for an hour
-                    Response.Cookies.Append("AKey", "AVal", new CookieOptions { Expires = DateTime.Now.AddHours(1) });
+                    //Response.Cookies.Append("AKey", "AVal", new CookieOptions { Expires = DateTime.Now.AddHours(1) });
+                    Access.admin = true;
                     return Ok(restResponse.Content);
                 }
                 //for other failed responses

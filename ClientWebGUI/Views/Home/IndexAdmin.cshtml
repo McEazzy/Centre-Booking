@@ -1,0 +1,76 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    @using ClientWebGUI.Models;
+    @model IEnumerable<PreCentre>;
+    var incId = Model.Count() + 1;
+}
+<div id="tableview">
+    @if(ViewBag.ServerError == null)
+    {
+        <table>
+            <thead>
+                <tr>
+                <th style="width:150px">ID</th>
+                <th style="width:150px">Centre</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+                @foreach (var centre in Model)
+                {
+                    <tr>
+                        <td>@centre.Id</td>
+                        <td id="CName_@centre.Id">@centre.Name</td>
+                        <td>
+                            <button onclick="select(@centre.Id, '@centre.Name')">select</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    
+                    <td><input type="text" id="NId" name="NId" disabled value=@incId readonly/></td>
+                    <td><input type="text" id="NName" name="NName" placeholder="Enter new centre name"/></td>
+                    <td><button id="btnAdd" onClick="add()">Add Centre</button></td>
+                </tr>
+            </tfoot>
+        </table>
+    }
+    else
+    {
+        <p>ViewBag.ServerError</p>  
+    }
+</div>
+
+<script>
+    function add()
+    {
+        alert($("#NId").val());
+        alert($("#NName").val());
+
+        $.ajax(
+        {
+            url: '/home/add/',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(
+            {
+                "Id": $("#NId").val(),
+                "Name": $("#NName").val()
+            }),
+            success: function (data, textStatus, jQxhr)
+            {
+                alert("Successfully add a new centre to the server");
+            },
+            error: function (jqXhr, textStatus, error) {
+                alert(jqXhr.responseText);
+                console.log(textStatus);
+                console.log(error);
+            }
+        });
+    }
+</script>
+
