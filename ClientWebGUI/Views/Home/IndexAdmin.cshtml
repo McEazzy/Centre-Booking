@@ -9,7 +9,7 @@
 <div id="tableview">
     @if(ViewBag.ServerError == null)
     {
-        <table>
+        <table id="tabCen">
             <thead>
                 <tr>
                 <th style="width:150px">ID</th>
@@ -17,7 +17,7 @@
                 <th></th>
             </tr>
             </thead>
-            <tbody>
+            <tbody id="test">
                 @foreach (var centre in Model)
                 {
                     <tr>
@@ -48,8 +48,9 @@
 <script>
     function add()
     {
-        alert($("#NId").val());
-        alert($("#NName").val());
+        //Shorthand ref to input's element ID
+        var inputId = $("#NId");
+        var inputName = $("#NName");
 
         $.ajax(
         {
@@ -58,12 +59,40 @@
             contentType: 'application/json',
             data: JSON.stringify(
             {
-                "Id": $("#NId").val(),
-                "Name": $("#NName").val()
+                "Id": inputId.val(),
+                "Name": inputName.val()
             }),
             success: function (data, textStatus, jQxhr)
             {
                 alert("Successfully add a new centre to the server");
+
+                //Get the reference of the Table's TBODY element.
+                var tBody = $("#test")[0];
+
+                //Add Row.
+                var row = tBody.insertRow(-1);
+
+                //Add Id cell.
+                var cell = $(row.insertCell(-1));
+                cell.html(inputId.val());
+
+                //Add Name cell.
+                cell = $(row.insertCell(-1));
+                cell.html(inputName.val());
+
+                //Add a Select Button cell.
+                cell = $(row.insertCell(-1));
+                var selectBtn = $("<button>Select</button>");
+                selectBtn.attr("onClick", "select(inputID.val(), input.val())");
+                cell.append(selectBtn);
+
+                //Increment the count for list of centres dynamically and set to variable
+                var assignedId = inputId.val()
+                assignedId++;
+
+                //Clear the TextBoxes.
+                inputId.val(assignedId);
+                inputName.val("");
             },
             error: function (jqXhr, textStatus, error) {
                 alert(jqXhr.responseText);
@@ -71,6 +100,8 @@
                 console.log(error);
             }
         });
+
+
     }
 </script>
 

@@ -59,7 +59,7 @@ namespace ClientWebGUI.Controllers
                 if (restResponse.IsSuccessStatusCode)
                 {
                     Centre cen = JsonConvert.DeserializeObject<Centre>(restResponse.Content);
-                    DateTime endDate = Convert.ToDateTime(cen.BookedSessions.Last().EndDate);
+                    DateTime endDate = cen.BookedSessions.Last().EndDate;
 
                     //if the last end date from all booking sessions occured before, set available date to today
                     string availDate;
@@ -89,7 +89,7 @@ namespace ClientWebGUI.Controllers
         [HttpPost]
         public IActionResult Book([FromBody] PreBooking session) 
         {
-            Debug.WriteLine(JsonConvert.SerializeObject(session));
+            Debug.WriteLine("YEAH "+JsonConvert.SerializeObject(session));
             try
             {
                 RestClient restClient = new RestClient("http://localhost:50697/");

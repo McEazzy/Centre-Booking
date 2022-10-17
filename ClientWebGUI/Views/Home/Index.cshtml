@@ -42,7 +42,7 @@
         <input type="date" id="ADate" style="display:inline-block; width:200px" readonly placeholder="Select a centre to see its date"/>
     </p>    
     <p>Booking until (the end date):
-        <input type="date" id="EDate" style="display:inline-block" />
+        <input type="date" id="EDate" style="display:inline-block" asp-for="Date" name="EndDate"/>
     </p>
     <p>Enter your name to book the venue:
         <input type="text" id="UName" style="display:inline-block" placeholder="e.g: Naruto Uzumaki,..."/>
@@ -76,11 +76,19 @@
 <script>
     function book()
     {
-        var date = new Date($("#EndDate").val()).format('YYYY-MM-DD');
-        var day = date.getDate();
-        var month = date.getMonth();
-        var year = date.getFullYear();
-        alert(day + "/" + month + "/" + year);
+        var date = new Date($("#EndDate").val()).toUTCString();
+        //var day = date.getDate();
+        //var month = date.getMonth();
+        //var year = date.getFullYear();
+        if(!$("#EndDate").val())
+        {
+            alert("Bullshit");
+        }
+        else
+        {
+            alert($("#EndDate").val());
+        }
+
         $.ajax({
             url: '/home/book/',
             type: 'POST',
